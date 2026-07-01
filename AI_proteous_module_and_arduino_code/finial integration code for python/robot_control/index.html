@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RVCS v3.0 — Live Simulation Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root {
+  /* Industrial Tech Platinum Light Gradient */
+  --bg-gradient: linear-gradient(135deg, #dae3ec 0%, #cbd5e1 50%, #b8c5d6 100%);
+  --panel: rgba(248, 250, 252, 0.92);
+  --card: rgba(226, 232, 240, 0.9);
+  --border: #94a3b8;
+  --border2: #64748b;
+  
+  --amber: #d97706;--amber2: #b45309;
+  --teal: #0d9488;--teal2: #0f766e;
+  --red: #e11d48;--red2: #be123c;
+  --blue: #2563eb;--blue2: #1d4ed8;
+  --purple: #7c3aed;--purple2: #6d28d9;
+  --green: #16a34a;--dim: #cbd5e1;
+  --text: #0f172a;--text2: #475569;
+  
+  --mono: 'Share Tech Mono', monospace;
+  --display: 'Orbitron', sans-serif;
+  --body: 'Rajdhani', sans-serif;
+}
+html { 
+  background: var(--bg-gradient); 
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body {
+  background: transparent;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Note: Cyber Scanlines Overlay (body::before) has been completely removed from here to eliminate the low-opacity horizontal lines */
+
+/* Grid Matrix Overlay Overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(13, 148, 136, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(13, 148, 136, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  animation: gd 22s linear infinite;
+}
+@keyframes gd { to { background-position: 44px 44px; } }
+.shell { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+/* Masthead Block */
+.masthead { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 14px 20px; 
+  background: var(--panel); 
+  border: 1px solid var(--border); 
+  border-top: 3px solid var(--amber); 
+  box-shadow: 0 4px 20px rgba(148, 163, 184, 0.3);
+  backdrop-filter: blur(8px);
+  position: relative; 
+  overflow: hidden;
+}
+.masthead::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: linear-gradient(180deg, var(--amber), var(--amber2)); }
+.masthead::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, var(--amber), transparent 60%); }
+.ml { padding-left: 12px; }
+.mt { font-family: var(--display); font-size: 20px; font-weight: 900; color: var(--amber); letter-spacing: .12em; text-shadow: 0 0 10px rgba(217, 119, 6, 0.15); }
+.ms { font-family: var(--body); font-size: 11px; color: var(--text2); letter-spacing: .08em; margin-top: 2px; font-weight: 600; }
+.mr { display: flex; gap: 24px; align-items: center; }
+.sb-val { font-family: var(--display); font-size: 18px; font-weight: 700; color: var(--teal); line-height: 1; }
+.sb-lbl { font-size: 9px; color: var(--text2); letter-spacing: .1em; text-transform: uppercase; margin-top: 2px; text-align: center; font-weight: 600; }
+.pdot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 1.3s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.6); } }
+
+/* HUD Status Banner Panel Styles */
+.hud-bar { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 10px 18px; 
+  background: rgba(255, 255, 255, 0.95); 
+  border: 1px solid var(--border); 
+  border-left: 3px solid var(--teal); 
+  box-shadow: 0 2px 12px rgba(148, 163, 184, 0.2);
+  position: relative; 
+  overflow: hidden; 
+  min-height: 50px; 
+}
+.hud-bar::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, var(--teal), transparent); }
+.hud-status { font-family: var(--display); font-size: 11px; font-weight: 700; letter-spacing: .06em; transition: color .3s, text-shadow .3s; }
+.hud-status.ready { color: var(--teal); }
+.hud-status.hazard { color: var(--red); animation: flk .25s infinite; }
+.hud-status.capture { color: var(--purple); }
+.hud-status.paused { color: var(--amber); }
+@keyframes flk { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+.hud-right { display: flex; gap: 14px; align-items: center; font-size: 10px; color: var(--text2); font-weight: 600; }
+.hud-fps { color: var(--amber); font-family: var(--display); font-size: 14px; font-weight: 700; }
+.ser-ind { display: flex; align-items: center; gap: 5px; }
+.ser-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+/* Interactive Mode Navigation Select Strip */
+.scen-strip { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.scen-lbl { font-family: var(--display); font-size: 9px; color: var(--text2); letter-spacing: .15em; text-transform: uppercase; margin-right: 4px; font-weight: 700; }
+.sb { font-family: var(--display); font-size: 9px; font-weight: 700; letter-spacing: .07em; padding: 7px 16px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.7); color: var(--text2); cursor: pointer; border-radius: 2px; text-transform: uppercase; transition: all .18s; position: relative; overflow: hidden; }
+.sb::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: currentColor; transform: scaleX(0); transition: transform .18s; }
+.sb:hover::before, .sb.act::before { transform: scaleX(1); }
+.sb:hover { color: var(--text); border-color: var(--border2); background: #fff; }
+.sb.act-idle { color: var(--teal); border-color: var(--teal); background: rgba(13, 148, 136, 0.1); box-shadow: 0 0 8px rgba(13, 148, 136, 0.15); }
+.sb.act-drive { color: var(--amber); border-color: var(--amber); background: rgba(217, 119, 6, 0.1); box-shadow: 0 0 8px rgba(217, 119, 6, 0.15); }
+.sb.act-obstacle { color: var(--red); border-color: var(--red); background: rgba(225, 29, 72, 0.1); box-shadow: 0 0 8px rgba(225, 29, 72, 0.15); }
+.sb.act-face { color: var(--purple); border-color: var(--purple); background: rgba(124, 58, 237, 0.1); box-shadow: 0 0 8px rgba(124, 58, 237, 0.15); }
+.sb.act-gesture { color: var(--green); border-color: var(--green); background: rgba(22, 163, 74, 0.1); box-shadow: 0 0 8px rgba(22, 163, 74, 0.15); }
+
+/* Main Layout Grid Modules Enclosures */
+.main-grid { display: grid; grid-template-columns: 2.2fr 1.8fr; gap: 10px; }
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: 0 4px 20px rgba(148, 163, 184, 0.25); backdrop-filter: blur(8px); }
+.panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
+.ph { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: rgba(226, 232, 240, 0.6); flex-shrink: 0; }
+.pi { font-size: 9px; font-family: var(--display); font-weight: 700; padding: 2px 7px; border-radius: 2px; letter-spacing: .07em; }
+.pi-cam { background: rgba(13, 148, 136, 0.12); color: var(--teal); border: 1px solid rgba(13, 148, 136, 0.25); }
+.pi-ctrl { background: rgba(217, 119, 6, 0.12); color: var(--amber); border: 1px solid rgba(217, 119, 6, 0.25); }
+.pi-ser { background: rgba(37, 99, 235, 0.12); color: var(--blue); border: 1px solid rgba(37, 99, 235, 0.25); }
+.pt { font-family: var(--body); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text); flex: 1; }
+.pbadge { font-size: 9px; color: var(--text2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 2px; font-weight: 700; }
+.cam-panel { grid-column: 1; grid-row: 1/3; }
+.cam-view { width: 100%; height: 420px; object-fit: cover; background: #e2e8f0; display: block; border-bottom: 1px solid var(--border); }
+
+/* Manual Overrides Input Controls */
+.ctrl-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.ctrl-sec-lbl { font-family: var(--display); font-size: 9px; color: var(--text2); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 7px; display: flex; align-items: center; gap: 6px; font-weight: 700; }
+.ctrl-sec-lbl::before { content: ''; display: inline-block; width: 14px; height: 1px; background: var(--border); }
+.wasd-grid { display: grid; grid-template-columns: repeat(3,42px); grid-template-rows: repeat(2,42px); gap: 6px; width: fit-content; margin: 0 auto 4px auto; }
+.key { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border); border-bottom: 3px solid var(--border2); font-family: var(--display); font-size: 15px; font-weight: 700; color: var(--text); cursor: pointer; border-radius: 3px; user-select: none; transition: all .08s; }
+.key:hover { background: #fff; border-color: var(--border2); }
+.key.pressed { background: var(--amber); border-color: var(--amber); border-bottom-color: var(--amber2); color: #fff; transform: translateY(2px); box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
+.key.k-w { grid-column: 2; grid-row: 1; } .key.k-a { grid-column: 1; grid-row: 2; } .key.k-s { grid-column: 2; grid-row: 2; } .key.k-d { grid-column: 3; grid-row: 2; }
+
+/* System Execution Trigger Buttons styles */
+.act-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.abt { font-family: var(--display); font-size: 9px; font-weight: 700; letter-spacing: .07em; padding: 9px 12px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.8); color: var(--text2); cursor: pointer; border-radius: 2px; text-transform: uppercase; transition: all .15s; text-align: left; display: flex; align-items: center; gap: 8px; }
+.abt:hover { background: #fff; color: var(--text); border-color: var(--border2); }
+.abt-face:hover { border-color: var(--purple); color: var(--purple); background: rgba(124, 58, 237, 0.08); }
+.abt-obs:hover { border-color: var(--red); color: var(--red); background: rgba(225, 29, 72, 0.08); }
+.abt-clr:hover { border-color: var(--teal); color: var(--teal); background: rgba(13, 148, 136, 0.08); }
+.abt-stop { grid-column: 1/-1; border-color: rgba(225, 29, 72, 0.4); color: var(--red); background: rgba(225, 29, 72, 0.05); }
+.abt-stop:hover { border-color: var(--red2); color: #fff; background: var(--red); box-shadow: 0 0 10px rgba(225, 29, 72, 0.3); }
+
+/* Proteus Telemetry Logging Window Terminal */
+.ser-panel { grid-column: 1/-1; }
+.log-body { padding: 8px 14px; height: 140px; overflow-y: auto; display: flex; flex-direction: column-reverse; gap: 3px; background: rgba(255, 255, 255, 0.85); border-bottom: 1px solid var(--border); }
+.log-body::-webkit-scrollbar { width: 4px; }
+.log-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.ll { display: flex; gap: 10px; align-items: baseline; font-size: 11px; line-height: 1.45; }
+.lt { color: var(--text2); min-width: 72px; font-size: 10px; font-weight: 600; }
+.ltag { font-family: var(--display); font-size: 9px; font-weight: 700; min-width: 72px; padding: 2px 5px; border-radius: 2px; text-align: center; }
+.tag-fwd { color: var(--teal); background: rgba(13, 148, 136, 0.1); border: 1px solid rgba(13, 148, 136, 0.2); }
+.tag-stop { color: var(--amber); background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.2); }
+.tag-haz { color: var(--red); background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.2); }
+.tag-clr { color: var(--blue); background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.2); }
+.tag-face { color: var(--purple); background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.2); }
+.tag-back { color: var(--red2); background: rgba(190, 18, 60, 0.1); border: 1px solid rgba(190, 18, 60, 0.2); }
+.tag-sys { color: var(--text2); background: rgba(71, 85, 105, 0.08); border: 1px solid rgba(71, 85, 105, 0.15); }
+.lm { color: var(--text); flex: 1; font-weight: 600; }
+.lbyte { color: var(--amber); margin-left: auto; font-size: 10px; font-weight: 700; }
+
+/* System Metric Block Profiles */
+.stats-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; }
+.sc { background: var(--card); border: 1px solid var(--border); border-radius: 2px; padding: 12px 14px; position: relative; overflow: hidden; box-shadow: 0 2px 10px rgba(148, 163, 184, 0.15); }
+.sc::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+.sc-teal::after { background: var(--teal); } .sc-red::after { background: var(--red); } .sc-purple::after { background: var(--purple); } .sc-amber::after { background: var(--amber); } .sc-green::after { background: var(--green); }
+.sl { font-size: 9px; color: var(--text2); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 6px; font-weight: 700; }
+.sv { font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1; }
+.sv-t { color: var(--teal); } .sv-r { color: var(--red); } .sv-p { color: var(--purple); } .sv-a { color: var(--amber); } .sv-g { color: var(--green); }
+.su { font-size: 10px; color: var(--text2); margin-top: 3px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="masthead">
+  <div class="ml">
+    <div class="mt">RVCS v3.0</div>
+    <div class="ms">ROBOT VISION CONTROL SYSTEM &nbsp;·&nbsp; LIVE WEBCAM PIPELINE INTEGRATED</div>
+  </div>
+  <div class="mr">
+    <div><div class="sb-val" id="mFps">30.0</div><div class="sb-lbl">FPS</div></div>
+    <div><div class="sb-val" id="mFrame" style="color:var(--purple)">0</div><div class="sb-lbl">FRAME INDEX</div></div>
+    <div><div class="sb-val" id="mUp" style="color:var(--amber)">ONLINE</div><div class="sb-lbl">BRIDGE</div></div>
+    <div class="pdot"></div>
+  </div>
+</div>
+
+<div class="hud-bar">
+  <div class="hud-status ready" id="hudSt">✔ LIVE VISION STREAM ENGAGED | SELECT SCENARIO PIPELINE</div>
+  <div class="hud-right">
+    <div class="ser-ind"><div class="ser-dot" id="serDot" style="background:var(--teal)"></div><span>LINK: COM10 (9600 BAUD)</span></div>
+    <span style="color:var(--border2)">|</span>
+    <div class="hud-fps" id="hudFps">LIVE</div>
+  </div>
+</div>
+
+<div class="scen-strip">
+  <span class="scen-lbl">Scenario</span>
+  <button class="sb act-idle" id="sb-idle"     onclick="setScen('idle')">① Idle System</button>
+  <button class="sb"          id="sb-drive"    onclick="setScen('drive')">② Keyboard Drive</button>
+  <button class="sb"          id="sb-obstacle" onclick="setScen('obstacle')">③ Pothole Anomaly</button>
+  <button class="sb"          id="sb-face"     onclick="setScen('face')">④ Face Tracker</button>
+  <button class="sb"          id="sb-gesture"  onclick="setScen('gesture')">⑤ Finger Gesture</button>
+</div>
+
+<div class="main-grid">
+  <div class="panel cam-panel">
+    <div class="ph"><span class="pi pi-cam">MOD-CAM</span><span class="pt">Live OpenCV Feed Processing</span><span class="pbadge" style="color:var(--teal)">ACTIVE</span></div>
+    <img id="camFeed" src="http://127.0.0.1:5000/api/video_feed" class="cam-view" alt="Camera Feed Waiting for Python API Connection...">
+  </div>
+  
+  <div class="panel">
+    <div class="ph"><span class="pi pi-ctrl">CTRL</span><span class="pt">Operational Controls</span></div>
+    <div class="ctrl-body">
+      <div class="ctrl-sec-lbl">Manual Keyboard Overrides (Drive Mode Only)</div>
+      <div class="wasd-grid">
+        <div class="key k-w" id="kb-w" onmousedown="pressKey('w')" onmouseup="releaseKey('w')">W</div>
+        <div class="key k-a" id="kb-a" onmousedown="pressKey('a')" onmouseup="releaseKey('a')">A</div>
+        <div class="key k-s" id="kb-s" onmousedown="pressKey('s')" onmouseup="releaseKey('s')">S</div>
+        <div class="key k-d" id="kb-d" onmousedown="pressKey('d')" onmouseup="releaseKey('d')">D</div>
+      </div>
+      
+      <div class="ctrl-sec-lbl">Quick Scenario Interceptors</div>
+      <div class="act-btns">
+        <button class="abt abt-face"  onclick="trigFace()"><span>📷</span>Launch Face Record</button>
+        <button class="abt abt-obs"  onclick="trigObs()"><span>⚠</span>Inject Pothole Mode</button>
+        <button class="abt abt-clr"  onclick="clrObs()"><span>✓</span>Clear System to Idle</button>
+        <button class="abt abt-stop"  onclick="eStop()"><span>■</span>EMERGENCY STOP (X)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="sc sc-teal"><div class="sl">Data Layout</div><div class="sv sv-t" style="font-size:15px">(480, 640, 3)</div><div class="su">Webcam Array</div></div>
+  <div class="sc sc-red"><div class="sl">Pothole Index</div><div class="sv sv-r" id="stStreak">0</div><div class="su">Debounce filter</div></div>
+  <div class="sc sc-purple"><div class="sl">Captured Faces</div><div class="sv sv-p" id="stFaces">0</div><div class="su">Frame dataset limits</div></div>
+  <div class="sc sc-green"><div class="sl">Active Pipeline</div><div class="sv sv-g" id="stFing" style="font-size:14px">IDLE</div><div class="su">Engine Profile</div></div>
+  <div class="sc sc-amber"><div class="sl">Active Serial Byte</div><div class="sv sv-a" id="stCmd">S</div><div class="su">Forwarded character</div></div>
+</div>
+
+<div class="panel ser-panel">
+  <div class="ph"><span class="pi pi-ser">SERIAL LOG</span><span class="pt">Live Outbound Packets to Proteus Simulation Bridge</span><span class="pbadge">ACTIVE CHANNELS</span></div>
+  <div class="log-body" id="logBody"></div>
+</div>
+
+</div>
+
+<script>
+let scen = 'idle';
+let pressedKey = null;
+let frameCount = 0;
+let lastLoggedCmd = '';
+
+const keyMap = { w: 'FORWARD', a: 'LEFT', s: 'BACKWARD', d: 'RIGHT', x: 'STOP' };
+const keyByte = { w: "b'F'", a: "b'L'", s: "b'B'", d: "b'R'", x: "b'S'" };
+
+function setScen(s) {
+  scen = s;
+  document.querySelectorAll('.sb').forEach(b => b.className = 'sb');
+  if (document.getElementById('sb-' + s)) document.getElementById('sb-' + s).classList.add('act-' + s);
+  
+  fetch('http://127.0.0.1:5000/api/set_scenario', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ scenario: s })
+  }).catch(e => console.log("Backend offline or connection broken."));
+  
+  updHUD();
+}
+
+function pressKey(k) {
+  if (scen !== 'drive' && k !== 'x') return;
+  pressedKey = k;
+  const el = document.getElementById('kb-' + k); if (el) el.classList.add('pressed');
+  sendCmd(keyMap[k] || 'STOP', `Manual keyboard driver command`, keyByte[k] || "b'S'");
+}
+
+function releaseKey(k) {
+  if (pressedKey === k) pressedKey = null;
+  const el = document.getElementById('kb-' + k); if (el) el.classList.remove('pressed');
+  if (!pressedKey && scen === 'drive') sendCmd('STOP', 'Keys released', "b'S'");
+}
+
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (k in keyMap && pressedKey !== k) pressKey(k);
+});
+document.addEventListener('keyup', e => {
+  const k = e.key.toLowerCase();
+  if (k in keyMap && pressedKey === k) releaseKey(k);
+});
+
+function trigObs() { setScen('obstacle'); }
+function clrObs() { setScen('idle'); }
+function trigFace() { setScen('face'); }
+function eStop() { pressKey('x'); setTimeout(() => releaseKey('x'), 200); }
+
+function sendCmd(cmd, reason, byte) {
+  document.getElementById('stCmd').textContent = byte.replace("b'", "").replace("'", "");
+  
+  fetch('http://127.0.0.1:5000/api/command', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ command: cmd, byte: byte })
+  }).catch(e => {});
+  
+  if(cmd !== lastLoggedCmd) {
+     logLine(cmd, getTagClass(cmd), reason, byte);
+     lastLoggedCmd = cmd;
+  }
+}
+
+function getTagClass(cmd) {
+  return { FORWARD: 'tag-fwd', BACKWARD: 'tag-back', LEFT: 'tag-fwd', RIGHT: 'tag-fwd', STOP: 'tag-stop', HAZARD: 'tag-haz', CLEAR: 'tag-clr' }[cmd] || 'tag-sys';
+}
+
+function logLine(cmd, cls, msg, byte) {
+  const body = document.getElementById('logBody');
+  const d = document.createElement('div'); d.className = 'll';
+  d.innerHTML = `<span class="lt">${new Date().toTimeString().slice(0, 8)}</span><span class="ltag ${cls}">${cmd}</span><span class="lm">${msg}</span><span class="lbyte">${byte}</span>`;
+  body.prepend(d);
+}
+
+function updHUD() {
+  const el = document.getElementById('hudSt');
+  if (scen === 'obstacle') { el.textContent = '⚠ ANOMALY DETECTOR ENGAGED — COMPUTING ROAD PATHHOLES'; el.className = 'hud-status hazard'; }
+  else if (scen === 'face') { el.textContent = `📷 HAAR CASCADE DETECTS ACTIVE — PROFILE RECORDING MODE`; el.className = 'hud-status capture'; }
+  else if (scen === 'gesture') { el.textContent = `✋ CONVEX HULL GESTURE MATRIX ACTIVE — HAND STEERING READY`; el.className = 'hud-status ready'; }
+  else if (scen === 'drive') { el.textContent = `➤ WASD INTERFACE RUNNING — CLICK SCREEN/PRESS KEYS TO DRIVE`; el.className = 'hud-status ready'; }
+  else { el.textContent = '✔ LIVE BRIDGE ENGAGED | STANDBY MODE READY FOR INTERCEPT COMMANDS'; el.className = 'hud-status ready'; }
+}
+
+setInterval(() => {
+  frameCount += 24;
+  document.getElementById('mFrame').textContent = frameCount;
+  
+  fetch('http://127.0.0.1:5000/api/state')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('stStreak').textContent = data.pothole_debounce;
+      document.getElementById('stFaces').textContent = data.face_db_count + " / 30";
+      document.getElementById('stCmd').textContent = data.active_byte;
+      document.getElementById('stFing').textContent = data.scenario.toUpperCase();
+      
+      let activeReadableCmd = "STOP";
+      if(data.active_byte === 'F') activeReadableCmd = "FORWARD";
+      if(data.active_byte === 'L') activeReadableCmd = "LEFT";
+      if(data.active_byte === 'R') activeReadableCmd = "RIGHT";
+      if(data.active_byte === 'B') activeReadableCmd = "BACKWARD";
+      if(data.active_byte === 'H') activeReadableCmd = "HAZARD";
+      
+      if(activeReadableCmd !== lastLoggedCmd) {
+         logLine(activeReadableCmd, getTagClass(activeReadableCmd), `Pipeline auto change loop`, `b'${data.active_byte}'`);
+         lastLoggedCmd = activeReadableCmd;
+      }
+    }).catch(e => {});
+}, 1000);
+
+setScen('idle');
+</script>
+</body>
+</html>

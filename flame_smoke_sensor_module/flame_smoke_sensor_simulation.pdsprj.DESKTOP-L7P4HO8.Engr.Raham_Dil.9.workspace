@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<WORKSPACE>
+ <FRAME activeWindow="0">
+  <PLACEMENT>01d9d0cb00030000000000d20000000b000006ad000003f3000000d600000031000006a9000003ef00000000000000000780000000d600000031000006a9000003ef</PLACEMENT>
+  <WINDOW module="STARTUP" index="0" type="default"/>
+ </FRAME>
+ <MODULE name="ISIS">
+  <editor metric="0" gridmajor="0" orgmode="0" zoom="10" snap="0" xcursor="0" snaprange="0" scale="10" gridmode="2" snapidx="2" flipped="0" gridminor="0">
+   <centre x="0" y="0"/>
+   <origin x="0" y="0"/>
+   <world y2="-1" y1="1" x1="1" x2="-1"/>
+  </editor>
+ </MODULE>
+</WORKSPACE>
