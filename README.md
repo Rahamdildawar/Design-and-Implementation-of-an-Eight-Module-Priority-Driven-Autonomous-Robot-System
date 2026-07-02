@@ -6,7 +6,7 @@ Author: **Raham Dil** — Computer Engineering, Ghulam Ishaq Khan Institute of E
 📧 u2024529@giki.edu.pk
 
 <p align="center">
-  <img src="./images/arduino_mega_2560.jpg" alt="Arduino Mega 2560" width="500"/>
+  <img src="arduino-mega-2560-board-pin-diagram.jpg" alt="Arduino Mega 2560" width="500"/>
 </p>
 
 <p align="center">
