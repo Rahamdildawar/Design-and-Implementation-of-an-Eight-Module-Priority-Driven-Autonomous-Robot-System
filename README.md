@@ -89,7 +89,7 @@ The system was validated experimentally, achieving **100% correct priority arbit
 <p align="center">
   <img src="line_follower_robot_using_arduino_uno_and_ir_sensor1_3r2sU2hay2.avif" alt="5-Channel IR Sensor Array" width="320"/>
   <img src="Front-and-back-view-of-HC-SR04-Ultrasonic-Sensor-Module.webp" alt="HC-SR04 Ultrasonic Sensor" width="320"/>
-  <img src="7eeeae6647275ec26089e568ac3567e.jpg" alt="L298N Motor Driver" width="320"/>
+  <img src="L298-2.jpg" alt="L298N Motor Driver" width="320"/>
 </p>
 <p align="center"><em>Representative component images (5-ch IR array, HC-SR04, L298N driver) — not the project's own hardware photos.</em></p>
 
